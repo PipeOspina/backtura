@@ -1,0 +1,45 @@
+name: Deploy Dev
+
+on:
+  push:
+    branches:
+      - dev
+
+jobs:
+  build:
+    name: Deploy
+    runs-on: ubuntu-latest
+    environment: Development
+    steps:
+      - name: Use Checkout
+        uses: actions/checkout@master
+        with:
+          persist-credential: false
+
+      - name: Use NodeJS
+        uses: actions/setup-node@master
+        with:
+          node-version: 14
+
+      - name: Install
+        uses: borales/actions-yarn@master
+        with:
+          cmd: install
+
+      - name: Build
+        uses: borales/actions-yarn@master
+        env:
+          DB_HOST: ${{ secrets.DB_HOST }}
+          DB_PORT: ${{ secrets.DB_PORT }}
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PWD: ${{ secrets.DB_PWD }}
+          DB_NAME: ${{ secrets.DB_NAME }}
+          DB_LOGGING: ${{ secrets.DB_LOGGING }}
+          API_KEY: ${{ secrets.API_KEY }}
+        with:
+          cmd: build
+
+      - name: Setup GCP
+        uses: google-github-actions/deploy-appengine@main
+        with:
+          credentials: ${{ secrets.GCP_SA_KEY }}
