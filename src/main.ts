@@ -1,3 +1,4 @@
+import { ApiKeyGuard } from './guards/api-key.guard';
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
@@ -7,6 +8,7 @@ async function bootstrap() {
     const port = process.env.PORT || 3000;
 
     app.enableVersioning();
+    app.useGlobalGuards(new ApiKeyGuard());
 
     app.useGlobalPipes(
         new ValidationPipe({

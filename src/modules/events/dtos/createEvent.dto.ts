@@ -1,11 +1,15 @@
+import { Type } from 'class-transformer';
 import {
     IsInt,
     IsNumber,
+    IsObject,
     IsOptional,
     IsString,
     Max,
     Min,
+    ValidateNested,
 } from 'class-validator';
+import { CreateLocationBody } from './createLocation';
 
 export class CreateEventBody {
     @IsString()
@@ -25,8 +29,10 @@ export class CreateEventBody {
     @Max(110)
     minAge?: number;
 
-    @IsString()
-    location: string; // id reference for intertface Location
+    @IsObject()
+    @ValidateNested()
+    @Type(() => CreateLocationBody)
+    location: CreateLocationBody;
 
     @IsOptional()
     @IsNumber()

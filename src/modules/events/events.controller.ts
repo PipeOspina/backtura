@@ -12,6 +12,8 @@ import {
     Put,
 } from '@nestjs/common';
 import { EventsService } from './events.service';
+import { EditLocationBody } from './dtos/editLocation.dto';
+import { CreateLocationBody } from './dtos/createLocation';
 
 @Controller({ version: '1', path: 'events' })
 export class EventsController {
@@ -27,6 +29,11 @@ export class EventsController {
         return this.eventsService.getOne(id);
     }
 
+    @Get(':id/location')
+    getLocation(@Param('id', ParseIntPipe) id: number) {
+        return this.eventsService.getLocation(id);
+    }
+
     @Post()
     createOne(@Body() data: CreateEventBody) {
         return this.eventsService.createOne(data);
@@ -40,12 +47,28 @@ export class EventsController {
         return this.eventsService.editOne(id, data);
     }
 
+    @Patch(':id/location')
+    optionalLocationEdit(
+        @Param('id', ParseIntPipe) id: number,
+        @Body() data: EditLocationBody,
+    ) {
+        return this.eventsService.editLocation(id, data);
+    }
+
     @Put(':id')
     hardEdit(
         @Param('id', ParseIntPipe) id: number,
         @Body() data: CreateEventBody,
     ) {
         return this.eventsService.editOne(id, data, true);
+    }
+
+    @Put(':id/location')
+    hardLocationEdit(
+        @Param('id', ParseIntPipe) id: number,
+        @Body() data: CreateLocationBody,
+    ) {
+        return this.eventsService.editLocation(id, data, true);
     }
 
     @Delete(':id')

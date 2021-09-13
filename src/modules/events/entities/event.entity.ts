@@ -1,3 +1,4 @@
+import { Location } from './location.entity';
 import {
     Column,
     CreateDateColumn,
@@ -5,6 +6,7 @@ import {
     JoinColumn,
     ManyToOne,
     OneToMany,
+    OneToOne,
     PrimaryGeneratedColumn,
     UpdateDateColumn,
 } from 'typeorm';
@@ -30,8 +32,9 @@ export class Event {
     @Column('tinyint', { name: 'min_age', nullable: true })
     minAge?: number;
 
-    @Column()
-    location: string; // id reference for intertface Location
+    @OneToOne(() => Location)
+    @JoinColumn({ name: 'location_id' })
+    location: Location;
 
     @Column('decimal', { nullable: true })
     price?: number;
