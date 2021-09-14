@@ -39,7 +39,7 @@ jobs:
           DB_USER: ${{ secrets.DB_USER }}
           DB_PWD: ${{ secrets.DB_PWD }}
           DB_NAME: ${{ secrets.DB_NAME }}
-          DB_LOGGING: ${{ secrets.DB_LOGGING }}
+          DB_SOCKET: ${{ secrets.DB_SOCKET }}
           API_KEY: ${{ secrets.API_KEY }}
 
       - name: Setup GCP

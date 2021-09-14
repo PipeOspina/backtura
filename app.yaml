@@ -9,6 +9,7 @@ env_variables:
   DB_USER: $DB_USER
   DB_PWD: $DB_PWD
   DB_NAME: $DB_NAME
+  DB_SOCKET: $DB_SOCKET
   API_KEY: $API_KEY
 
 handlers:
