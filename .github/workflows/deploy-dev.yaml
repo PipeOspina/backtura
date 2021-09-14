@@ -28,6 +28,11 @@ jobs:
 
       - name: Build
         uses: borales/actions-yarn@master
+        with:
+          cmd: build
+
+      - name: Copy Env to App YAML
+        uses: ikuanyshbekov/app-yaml-env-compiler@master
         env:
           DB_HOST: ${{ secrets.DB_HOST }}
           DB_PORT: ${{ secrets.DB_PORT }}
@@ -36,16 +41,6 @@ jobs:
           DB_NAME: ${{ secrets.DB_NAME }}
           DB_LOGGING: ${{ secrets.DB_LOGGING }}
           API_KEY: ${{ secrets.API_KEY }}
-        with:
-          cmd: build
-
-      - name: App YAML
-        run: |
-            echo $APP_YAML >> app.yaml
-            cat app.yaml
-        shell: bash
-        env:
-          APP_YAML: ${{ secrets.APP_YAML }}
 
       - name: Setup GCP
         uses: google-github-actions/deploy-appengine@main

@@ -1,0 +1,16 @@
+runtime: nodejs14
+env: standard
+
+env_variables:
+  DB_HOST: $DB_HOST
+  DB_PORT: $DB_PORT
+  DB_USER: $DB_USER
+  DB_PWD: $DB_PWD
+  DB_NAME: $DB_NAME
+  API_KEY: $API_KEY
+
+handlers:
+- url: /.*
+  script: auto
+  secure: always
+  redirect_http_response_code: 301
