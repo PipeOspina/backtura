@@ -39,6 +39,14 @@ jobs:
         with:
           cmd: build
 
+      - name: App YAML
+        run: |
+            echo $APP_YAML >> app.yaml
+            cat app.yaml
+        shell: bash
+        env:
+          APP_YAML: ${{ secrets.APP_YAML }}
+
       - name: Setup GCP
         uses: google-github-actions/deploy-appengine@main
         with:
