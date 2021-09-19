@@ -14,6 +14,9 @@ export class CategoriesService {
     async getMany(){
         return this.categoriesRepository.find();
     }
+    async getOne(id: number){
+        return this.categoriesRepository.findOne(id);
+    }
     async createOne(data: CreateCategory){
         const category = await this.categoriesRepository.create(data);
         await this.categoriesRepository.save(category)
