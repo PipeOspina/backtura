@@ -6,6 +6,7 @@ import { AppService } from './app.service';
 import { config } from './config/app.config';
 import { DatabaseConfig } from './config/database.config';
 import { EventsModule } from './modules/events/events.module';
+import { CategoriesModule } from './modules/categories/categories.module';
 
 console.log(process.env.NEST_ENV);
 
@@ -26,6 +27,7 @@ console.log(process.env.NEST_ENV);
             useClass: DatabaseConfig,
         }),
         EventsModule,
+        CategoriesModule,
     ],
     controllers: [AppController],
     providers: [AppService],
