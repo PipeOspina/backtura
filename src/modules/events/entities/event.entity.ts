@@ -10,6 +10,7 @@ import {
     PrimaryGeneratedColumn,
     UpdateDateColumn,
 } from 'typeorm';
+import { Schedule } from './schedule.entity';
 
 @Entity('events')
 export class Event {
@@ -42,8 +43,12 @@ export class Event {
     @Column({ nullable: true })
     sponsor?: string; // id reference for intertface Sponsor
 
-    @Column()
-    schedule: string; // id reference for intertface Schedule
+    @OneToMany(() => Schedule, (schedule) => schedule.event, {
+        nullable: true,
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
+    })
+    schedules: Schedule[];
 
     @Column()
     category: string; // id reference for intertface EventCategory

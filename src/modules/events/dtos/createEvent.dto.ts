@@ -10,6 +10,7 @@ import {
     ValidateNested,
 } from 'class-validator';
 import { CreateLocationBody } from './createLocation';
+import { CreateScheduleBody } from './createSchedule.dto';
 
 export class CreateEventBody {
     @IsString()
@@ -41,8 +42,10 @@ export class CreateEventBody {
     @IsOptional()
     sponsor?: string; // id reference for intertface Sponsor
 
-    @IsString()
-    schedule: string; // id reference for intertface Schedule
+    @IsObject({ each: true })
+    @ValidateNested({ each: true })
+    @Type(() => CreateScheduleBody)
+    schedules: CreateScheduleBody[];
 
     @IsString()
     category: string; // id reference for intertface EventCategory

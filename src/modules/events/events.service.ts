@@ -7,6 +7,9 @@ import { Event, Image } from './entities/event.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Location } from './entities/location.entity';
 import { EditLocationBody } from './dtos/editLocation.dto';
+import { CreateScheduleBody } from './dtos/createSchedule.dto';
+import { Schedule } from './entities/schedule.entity';
+import { CreateLocationBody } from './dtos/createLocation';
 
 @Injectable()
 export class EventsService {
@@ -17,67 +20,86 @@ export class EventsService {
         private readonly imagesRepository: Repository<Image>,
         @InjectRepository(Location)
         private readonly locationsRepository: Repository<Location>,
+        @InjectRepository(Schedule)
+        private readonly schedulesRepository: Repository<Schedule>,
     ) {}
 
     async getOne(id: number) {
         const event = await this.eventsRepository.findOne(id, {
-            relations: ['images', 'location'],
+            relations: ['images', 'location', 'schedules'],
         });
         if (!event) throw new NotFoundException();
-        const { images, location, ...data } = event;
+        const { images, location, schedules, ...data } = event;
         const { id: _, ...loc } = location || {};
+
+        const sched =
+            schedules?.map(({ id: _, hourHands, ...schedule }) => ({
+                ...schedule,
+                hourHands: hourHands?.map(({ id: _, ...hourHand }) => hourHand),
+            })) || [];
         return {
             ...data,
             imageUrls: images?.map(({ url }) => url),
             location: loc,
+            schedules: sched,
         };
     }
 
     async getMany() {
         const res = await this.eventsRepository.find({
-            relations: ['images', 'location'],
+            where: { isActive: true },
+            relations: ['images', 'location', 'schedules'],
         });
         return res.map((event) => {
-            const { images, location, ...data } = event;
+            const { images, location, schedules, ...data } = event;
             const { id: _, ...loc } = location || {};
+            const sched =
+                schedules?.map(({ id: _, hourHands, ...schedule }) => ({
+                    ...schedule,
+                    hourHands: hourHands?.map(
+                        ({ id: _, ...hourHand }) => hourHand,
+                    ),
+                })) || [];
             return {
                 ...data,
                 imageUrls: images?.map(({ url }) => url),
                 location: loc,
+                schedules: sched,
             };
         });
     }
 
     async createOne(data: CreateEventBody) {
-        const { imageUrls, location, ...body } = data;
+        const { imageUrls, location, schedules, ...body } = data;
 
         const event = await this.eventsRepository.create(body);
-        const { id, ...loc } = await this.locationsRepository.create(location);
-        event.location = { id, ...loc };
-        await this.locationsRepository.save({ id, ...loc });
-        await this.createImages(event, imageUrls);
+        const { id } = await this.eventsRepository.save(event);
 
-        await this.eventsRepository.save(event);
-        return { ...event, imageUrls, location: { ...loc } };
+        this.createLocation(id, location);
+        this.createImages(event, imageUrls);
+        this.createSchedules(event, schedules);
+
+        return { ...event, imageUrls, schedules, location };
     }
 
     async editOne(id: number, data: EditEventBody, hard?: boolean) {
         const event = await this.eventsRepository.findOne(id);
         if (!event) throw new NotFoundException();
 
-        const { imageUrls, ...body } = data;
+        const { imageUrls, schedules, ...body } = data;
         this.createImages(event, imageUrls, true);
+        this.createSchedules(event, schedules, true);
 
         if (hard) {
-            !imageUrls && (await this.imagesRepository.delete({ event }));
-            await this.eventsRepository
+            this.eventsRepository
                 .createQueryBuilder()
                 .update(Event)
                 .set(body)
                 .where('id = :id', { id: event.id })
-                .execute();
+                .execute()
+                .then();
         } else {
-            await this.eventsRepository.update(id, body);
+            this.eventsRepository.update(id, body).then();
         }
 
         return { ...event, ...body, imageUrls };
@@ -91,16 +113,43 @@ export class EventsService {
         return true;
     }
 
+    async createLocation(eventId: number, location: CreateLocationBody) {
+        const loc = await this.locationsRepository.create(location);
+        await this.locationsRepository.save(loc);
+        await this.eventsRepository.update(eventId, { location: loc });
+    }
+
     async createImages(event: Event, images?: string[], edit?: boolean) {
         if (images) {
             edit && (await this.imagesRepository.delete({ event }));
-            images.forEach(async (url) => {
-                const image = await this.imagesRepository.create({
-                    url,
-                });
-                image.event = event;
-                await this.imagesRepository.save(image);
-            });
+            await Promise.all(
+                images.map(async (url) => {
+                    const image = await this.imagesRepository.create({
+                        url,
+                    });
+                    image.event = event;
+                    await this.imagesRepository.save(image);
+                }),
+            );
+        }
+    }
+
+    async createSchedules(
+        event: Event,
+        schedules?: CreateScheduleBody[],
+        edit?: boolean,
+    ) {
+        if (schedules) {
+            edit && (await this.imagesRepository.delete({ event }));
+            await Promise.all(
+                schedules.map(async (schedule) => {
+                    const object = await this.schedulesRepository.create(
+                        schedule,
+                    );
+                    object.event = event;
+                    await this.schedulesRepository.save(object);
+                }),
+            );
         }
     }
 
@@ -138,5 +187,18 @@ export class EventsService {
         }
 
         return { ...body, ...data };
+    }
+
+    async getSchedules(eventId: number) {
+        const { schedules } =
+            (await this.eventsRepository.findOne(eventId, {
+                relations: ['schedules'],
+            })) || {};
+        const res = schedules.map(({ id: _, hourHands, ...schedule }) => ({
+            ...schedule,
+            hourHands: hourHands.map(({ id: _, ...hourHand }) => hourHand),
+        }));
+        if (!schedules || !res.length) throw new NotFoundException();
+        return res;
     }
 }
