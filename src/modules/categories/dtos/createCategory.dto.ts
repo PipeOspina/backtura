@@ -1,16 +1,6 @@
-import { Type } from 'class-transformer';
-import {
-    IsInt,
-    IsNumber,
-    IsObject,
-    IsOptional,
-    IsString,
-    Max,
-    Min,
-    ValidateNested,
-} from 'class-validator';
+import { IsOptional, IsString } from 'class-validator';
 
-export class CreateCategory{
+export class CreateCategory {
     @IsString()
     name: string;
 
