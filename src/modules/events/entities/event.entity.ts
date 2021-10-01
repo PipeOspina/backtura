@@ -11,6 +11,7 @@ import {
     UpdateDateColumn,
 } from 'typeorm';
 import { Schedule } from './schedule.entity';
+import { Category } from '../../categories/entities/category.entity';
 
 @Entity('events')
 export class Event {
@@ -41,7 +42,7 @@ export class Event {
     price?: number;
 
     @Column({ nullable: true })
-    sponsor?: string; // id reference for intertface Sponsor
+    sponsor?: number; // id reference for intertface Sponsor
 
     @OneToMany(() => Schedule, (schedule) => schedule.event, {
         nullable: true,
@@ -50,8 +51,8 @@ export class Event {
     })
     schedules: Schedule[];
 
-    @Column()
-    category: string; // id reference for intertface EventCategory
+    @OneToOne(() => Category)
+    category: number;
 
     @Column({ default: true, name: 'is_active' })
     isActive: boolean;

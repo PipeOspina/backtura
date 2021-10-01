@@ -5,6 +5,7 @@ import {
     IsObject,
     IsOptional,
     IsString,
+    Length,
     Max,
     Min,
     ValidateNested,
@@ -14,6 +15,7 @@ import { CreateScheduleBody } from './createSchedule.dto';
 
 export class CreateEventBody {
     @IsString()
+    @Length(1)
     name: string;
 
     @IsOptional()
@@ -40,13 +42,14 @@ export class CreateEventBody {
     price?: number;
 
     @IsOptional()
-    sponsor?: string; // id reference for intertface Sponsor
+    @IsNumber()
+    sponsor?: number; // id reference for intertface Sponsor
 
     @IsObject({ each: true })
     @ValidateNested({ each: true })
     @Type(() => CreateScheduleBody)
     schedules: CreateScheduleBody[];
 
-    @IsString()
-    category: string; // id reference for intertface EventCategory
+    @IsNumber()
+    category: number; // id reference for intertface EventCategory
 }

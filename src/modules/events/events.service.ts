@@ -10,6 +10,7 @@ import { EditLocationBody } from './dtos/editLocation.dto';
 import { CreateScheduleBody } from './dtos/createSchedule.dto';
 import { Schedule } from './entities/schedule.entity';
 import { CreateLocationBody } from './dtos/createLocation';
+import { Category } from '../categories/entities/category.entity';
 
 @Injectable()
 export class EventsService {
@@ -22,6 +23,8 @@ export class EventsService {
         private readonly locationsRepository: Repository<Location>,
         @InjectRepository(Schedule)
         private readonly schedulesRepository: Repository<Schedule>,
+        @InjectRepository(Category)
+        private readonly categoriesRepository: Repository<Category>,
     ) {}
 
     async getOne(id: number) {
@@ -70,9 +73,10 @@ export class EventsService {
     }
 
     async createOne(data: CreateEventBody) {
-        const { imageUrls, location, schedules, ...body } = data;
+        const { imageUrls, location, schedules, category, ...body } = data;
 
         const event = await this.eventsRepository.create(body);
+        await this.nestCategory(event, category);
         const { id } = await this.eventsRepository.save(event);
 
         this.createLocation(id, location);
@@ -86,7 +90,9 @@ export class EventsService {
         const event = await this.eventsRepository.findOne(id);
         if (!event) throw new NotFoundException();
 
-        const { imageUrls, schedules, ...body } = data;
+        const { imageUrls, location, schedules, category, ...body } = data;
+        category && (await this.nestCategory(event, category));
+        location && this.editLocation(id, location, hard);
         this.createImages(event, imageUrls, true);
         this.createSchedules(event, schedules, true);
 
@@ -108,7 +114,9 @@ export class EventsService {
     async deleteOne(id: number) {
         const event = await this.eventsRepository.findOne(id);
         if (!event) throw new NotFoundException();
+        await this.locationsRepository.delete({ id });
         await this.imagesRepository.delete({ event });
+        await this.schedulesRepository.delete({ event });
         await this.eventsRepository.delete({ id });
         return true;
     }
@@ -200,5 +208,17 @@ export class EventsService {
         }));
         if (!schedules || !res.length) throw new NotFoundException();
         return res;
+    }
+
+    async nestCategory(event: Event, id: number) {
+        const category = await this.categoriesRepository.findOne(id);
+        if (!category) {
+            const error = new NotFoundException();
+            throw new NotFoundException({
+                ...error,
+                response: 'Category not found',
+            });
+        }
+        event.category = id;
     }
 }

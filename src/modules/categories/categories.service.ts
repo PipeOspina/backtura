@@ -3,13 +3,15 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateCategory } from './dtos/createCategory.dto';
 import { EditCategoryBody } from './dtos/editCategory.dto';
-import { Category } from './entities/category.entity';
+import { Category, Icon } from './entities/category.entity';
 
 @Injectable()
 export class CategoriesService {
     constructor(
         @InjectRepository(Category)
         private readonly categoriesRepository: Repository<Category>,
+        @InjectRepository(Icon)
+        private readonly iconsRepository: Repository<Icon>,
     ) {}
     async getMany() {
         return this.categoriesRepository.find();

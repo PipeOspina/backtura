@@ -1,9 +1,9 @@
-import { IsDate } from 'class-validator';
+import { IsMilitaryTime } from 'class-validator';
 
 export class CreateHourHandBody {
-    @IsDate()
+    @IsMilitaryTime({ message: 'startTime must be formatted like HH:MM' })
     startTime: string;
 
-    @IsDate()
+    @IsMilitaryTime({ message: 'endTime must be formatted like HH:MM' })
     endTime: string;
 }

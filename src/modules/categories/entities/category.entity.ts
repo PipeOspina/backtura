@@ -1,10 +1,27 @@
+import { IconTypes } from './../enums/icon.enums';
 import {
     Column,
     CreateDateColumn,
     Entity,
+    JoinColumn,
+    OneToOne,
     PrimaryGeneratedColumn,
     UpdateDateColumn,
 } from 'typeorm';
+@Entity('icons')
+export class Icon {
+    @PrimaryGeneratedColumn()
+    id: number;
+
+    @Column()
+    name: string;
+
+    @Column({
+        type: 'enum',
+        enum: IconTypes,
+    })
+    type: IconTypes;
+}
 
 @Entity('categories')
 export class Category {
@@ -16,6 +33,10 @@ export class Category {
 
     @Column()
     color: string;
+
+    @OneToOne(() => Icon)
+    @JoinColumn({ name: 'icon_id' })
+    icon: Icon;
 
     @Column({ nullable: true })
     description?: string;

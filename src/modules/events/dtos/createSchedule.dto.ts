@@ -1,10 +1,5 @@
 import { Type } from 'class-transformer';
-import {
-    IsDateString,
-    IsObject,
-    IsOptional,
-    ValidateNested,
-} from 'class-validator';
+import { IsDateString, IsObject, ValidateNested } from 'class-validator';
 import { CreateHourHandBody } from './createHourHand.dto';
 
 export class CreateScheduleBody {
@@ -14,9 +9,15 @@ export class CreateScheduleBody {
     @IsDateString({}, { message: 'endDate must be formatted as AAAA-MM-DD' })
     endDate: string;
 
-    @IsOptional()
-    @IsObject({ each: true })
-    @ValidateNested({ each: true })
+    @IsObject({
+        each: true,
+        message: 'hourHands must be formatted as an Hour Hand array',
+    })
+    @ValidateNested({
+        each: true,
+        message:
+            'each value in nested property hourHands must be formatted as an Hour Hand',
+    })
     @Type(() => CreateHourHandBody)
-    hourHands?: CreateHourHandBody[];
+    hourHands: CreateHourHandBody[];
 }
