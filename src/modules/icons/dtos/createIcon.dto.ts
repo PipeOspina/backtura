@@ -5,6 +5,8 @@ export class CreateIconBody {
     @IsString()
     name: string;
 
-    @IsEnum(IconTypes)
+    @IsEnum(IconTypes, {
+        message: `type must be ${IconTypes.CUSTOM} or ${IconTypes.MATERIAL_UI}`,
+    })
     type: IconTypes;
 }

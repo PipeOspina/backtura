@@ -1,11 +1,4 @@
-import { Type } from 'class-transformer';
-import {
-    IsObject,
-    IsOptional,
-    IsString,
-    ValidateNested,
-} from 'class-validator';
-import { CreateIconBody } from './createIcon.dto';
+import { IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class CreateCategory {
     @IsString()
@@ -14,10 +7,8 @@ export class CreateCategory {
     @IsString()
     color: string;
 
-    @IsObject()
-    @ValidateNested()
-    @Type(() => CreateIconBody)
-    icon: CreateIconBody;
+    @IsNumber()
+    icon: number;
 
     @IsOptional()
     @IsString()

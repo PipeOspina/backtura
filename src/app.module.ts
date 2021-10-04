@@ -7,6 +7,7 @@ import { config } from './config/app.config';
 import { DatabaseConfig } from './config/database.config';
 import { EventsModule } from './modules/events/events.module';
 import { CategoriesModule } from './modules/categories/categories.module';
+import { IconsModule } from './modules/icons/icons.module';
 
 console.log(process.env.NEST_ENV);
 
@@ -28,6 +29,7 @@ console.log(process.env.NEST_ENV);
         }),
         EventsModule,
         CategoriesModule,
+        IconsModule,
     ],
     controllers: [AppController],
     providers: [AppService],

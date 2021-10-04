@@ -21,7 +21,7 @@ export class Event {
     @Column()
     name: string;
 
-    @Column({ nullable: true })
+    @Column('longtext', { nullable: true })
     description?: string;
 
     @OneToMany(() => Image, (image) => image.event, {
@@ -51,8 +51,8 @@ export class Event {
     })
     schedules: Schedule[];
 
-    @OneToOne(() => Category)
-    category: number;
+    @ManyToOne(() => Category, ({ id }) => id)
+    category: Category;
 
     @Column({ default: true, name: 'is_active' })
     isActive: boolean;

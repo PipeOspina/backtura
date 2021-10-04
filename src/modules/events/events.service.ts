@@ -51,11 +51,12 @@ export class EventsService {
     async getMany() {
         const res = await this.eventsRepository.find({
             where: { isActive: true },
-            relations: ['images', 'location', 'schedules'],
+            relations: ['images', 'location', 'schedules', 'category'],
         });
         return res.map((event) => {
-            const { images, location, schedules, ...data } = event;
+            const { images, location, schedules, category, ...data } = event;
             const { id: _, ...loc } = location || {};
+            const { id: categoryId } = category || {};
             const sched =
                 schedules?.map(({ id: _, hourHands, ...schedule }) => ({
                     ...schedule,
@@ -65,6 +66,7 @@ export class EventsService {
                 })) || [];
             return {
                 ...data,
+                category: categoryId,
                 imageUrls: images?.map(({ url }) => url),
                 location: loc,
                 schedules: sched,
@@ -83,7 +85,7 @@ export class EventsService {
         this.createImages(event, imageUrls);
         this.createSchedules(event, schedules);
 
-        return { ...event, imageUrls, schedules, location };
+        return { ...event, category, imageUrls, schedules, location };
     }
 
     async editOne(id: number, data: EditEventBody, hard?: boolean) {
@@ -219,6 +221,6 @@ export class EventsService {
                 response: 'Category not found',
             });
         }
-        event.category = id;
+        event.category = category;
     }
 }

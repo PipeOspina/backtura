@@ -1,27 +1,14 @@
-import { IconTypes } from './../enums/icon.enums';
 import {
     Column,
     CreateDateColumn,
     Entity,
-    JoinColumn,
-    OneToOne,
+    ManyToOne,
+    OneToMany,
     PrimaryGeneratedColumn,
     UpdateDateColumn,
 } from 'typeorm';
-@Entity('icons')
-export class Icon {
-    @PrimaryGeneratedColumn()
-    id: number;
-
-    @Column()
-    name: string;
-
-    @Column({
-        type: 'enum',
-        enum: IconTypes,
-    })
-    type: IconTypes;
-}
+import { Icon } from '../../icons/entities/icon.entity';
+import { Event } from '../../events/entities/event.entity';
 
 @Entity('categories')
 export class Category {
@@ -34,12 +21,14 @@ export class Category {
     @Column()
     color: string;
 
-    @OneToOne(() => Icon)
-    @JoinColumn({ name: 'icon_id' })
+    @ManyToOne(() => Icon, ({ id }) => id)
     icon: Icon;
 
     @Column({ nullable: true })
     description?: string;
+
+    @OneToMany(() => Event, ({ id }) => id)
+    event: number;
 
     @CreateDateColumn({
         name: 'created_at',
