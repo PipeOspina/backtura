@@ -28,9 +28,12 @@ export class EventsService {
     ) {}
 
     async getOne(id: number) {
-        const event = await this.eventsRepository.findOne(id, {
-            relations: ['images', 'location', 'schedules'],
-        });
+        const event = await this.eventsRepository.findOne(
+            { id, isActive: true },
+            {
+                relations: ['images', 'location', 'schedules'],
+            },
+        );
         if (!event) throw new NotFoundException();
         const { images, location, schedules, ...data } = event;
         const { id: _, ...loc } = location || {};
@@ -89,7 +92,10 @@ export class EventsService {
     }
 
     async editOne(id: number, data: EditEventBody, hard?: boolean) {
-        const event = await this.eventsRepository.findOne(id);
+        const event = await this.eventsRepository.findOne({
+            id,
+            isActive: true,
+        });
         if (!event) throw new NotFoundException();
 
         const { imageUrls, location, schedules, category, ...body } = data;
@@ -114,12 +120,12 @@ export class EventsService {
     }
 
     async deleteOne(id: number) {
-        const event = await this.eventsRepository.findOne(id);
+        const event = await this.eventsRepository.findOne({
+            id,
+            isActive: true,
+        });
         if (!event) throw new NotFoundException();
-        await this.locationsRepository.delete({ id });
-        await this.imagesRepository.delete({ event });
-        await this.schedulesRepository.delete({ event });
-        await this.eventsRepository.delete({ id });
+        await this.eventsRepository.update(id, { isActive: false });
         return true;
     }
 
