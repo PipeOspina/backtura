@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Icon } from '../icons/entities/icon.entity';
-import { CreateCategory } from './dtos/createCategory.dto';
+import { CreateCategoryBody } from './dtos/createCategory.dto';
 import { EditCategoryBody } from './dtos/editCategory.dto';
 import { Category } from './entities/category.entity';
 
@@ -61,7 +61,7 @@ export class CategoriesService {
         return this.categoriesRepository.findOne(id, { relations: ['icon'] });
     }
 
-    async createOne(data: CreateCategory) {
+    async createOne(data: CreateCategoryBody) {
         const { icon: iconId, ...body } = data;
         const icon = await this.iconsRepository.findOne(iconId);
         if (!icon) {

@@ -1,0 +1,9 @@
+dispatch:
+  - url: "backtura.gistura.com/*"
+    service: backtura
+  
+  - url: "www.gistura.com/*"
+    service: default
+
+  - url: "gistura.com/*"
+    service: default

@@ -1,7 +1,7 @@
 import { IsNumber, IsOptional, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
-export class CreateCategory {
+export class CreateCategoryBody {
     @IsString()
     @ApiProperty({ type: String })
     name: string;
@@ -16,6 +16,10 @@ export class CreateCategory {
 
     @IsOptional()
     @IsString()
-    @ApiProperty({ type: String, nullable: true })
+    @ApiProperty({
+        type: String,
+        nullable: true,
+        required: false,
+    })
     description?: string;
 }

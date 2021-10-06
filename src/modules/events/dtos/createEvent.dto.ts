@@ -22,19 +22,19 @@ export class CreateEventBody {
 
     @IsOptional()
     @IsString()
-    @ApiProperty({ type: String, nullable: true })
+    @ApiProperty({ type: String, nullable: true, required: false })
     description?: string;
 
     @IsOptional()
     @IsString({ each: true })
-    @ApiProperty({ type: () => [String], nullable: true })
+    @ApiProperty({ type: () => [String], nullable: true, required: false })
     imageUrls?: string[];
 
     @IsOptional()
     @IsInt()
     @Min(1)
     @Max(110)
-    @ApiProperty({ type: Number, nullable: true })
+    @ApiProperty({ type: Number, nullable: true, required: false })
     minAge?: number;
 
     @IsObject()
@@ -45,12 +45,12 @@ export class CreateEventBody {
 
     @IsOptional()
     @IsNumber()
-    @ApiProperty({ type: Number, nullable: true })
+    @ApiProperty({ type: Number, nullable: true, required: false })
     price?: number;
 
     @IsOptional()
     @IsNumber()
-    @ApiProperty({ type: Number, nullable: true })
+    @ApiProperty({ type: Number, nullable: true, required: false })
     sponsor?: number; // id reference for intertface Sponsor
 
     @IsObject({ each: true })
