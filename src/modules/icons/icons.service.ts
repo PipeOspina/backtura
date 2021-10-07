@@ -8,12 +8,16 @@ import { CreateIconBody } from './dtos/createIcon.dto';
 export class IconsService {
     constructor(
         @InjectRepository(Icon)
-        private readonly eventsRepository: Repository<Icon>,
+        private readonly iconsRepository: Repository<Icon>,
     ) {}
 
     async createOne(data: CreateIconBody) {
-        const icon = await this.eventsRepository.create(data);
-        await this.eventsRepository.save(icon);
+        const icon = await this.iconsRepository.create(data);
+        await this.iconsRepository.save(icon);
         return icon;
+    }
+
+    async deleteOne(id: number) {
+        return await this.iconsRepository.delete({ id });
     }
 }
