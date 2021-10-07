@@ -189,10 +189,13 @@ export class EventsService {
 
     async createSchedules(event: Event, schedules?: CreateScheduleBody[]) {
         if (schedules) {
-            for (const schedule of event.schedules) {
-                await this.hourhandsRepository.delete({ schedule });
+            console.log(schedules);
+            if (event.schedules) {
+                for (const schedule of event.schedules) {
+                    await this.hourhandsRepository.delete({ schedule });
+                }
+                await this.schedulesRepository.delete({ event });
             }
-            await this.schedulesRepository.delete({ event });
             await Promise.all(
                 schedules.map(async (schedule) => {
                     const hourHands = [];
