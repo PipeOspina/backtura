@@ -44,6 +44,9 @@ export class Event {
     @Column({ nullable: true })
     sponsor?: number; // id reference for intertface Sponsor
 
+    @Column('longtext', { nullable: true })
+    sponsorPage?: string;
+
     @OneToMany(() => Schedule, (schedule) => schedule.event, {
         nullable: true,
         onDelete: 'CASCADE',

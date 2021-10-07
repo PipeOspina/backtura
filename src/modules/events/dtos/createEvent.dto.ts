@@ -53,6 +53,11 @@ export class CreateEventBody {
     @ApiProperty({ type: Number, nullable: true, required: false })
     sponsor?: number; // id reference for intertface Sponsor
 
+    @IsOptional()
+    @IsString()
+    @ApiProperty({ type: String, nullable: true, required: false })
+    sponsorPage?: string;
+
     @IsObject({ each: true })
     @ValidateNested({ each: true })
     @Type(() => CreateScheduleBody)
